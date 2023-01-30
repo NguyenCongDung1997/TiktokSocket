@@ -1,9 +1,20 @@
 {
-    "name": "tiktok",
-    "description": "tiktok socket",
-    "version": "1.0",
-    "manifest_version": 3,
-    "action": {
-      "default_popup": "index.html"
-    }
+  "name": "NobiTik",
+  "description": "Nobi",
+  "version": "1.0",
+  "manifest_version": 3,
+  "action": {
+    "default_popup": "index.html"
+  },
+  "permissions": ["cookies", "storage", "webRequest"],
+  "host_permissions": [
+    "*://*.seller-vn.tiktok.com/*",
+    "*://*/*",
+    "ws://*/*",
+    "wss://*/*"
+  ],
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
   }
+}
