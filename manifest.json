@@ -8,6 +8,8 @@
   },
   "permissions": ["cookies", "storage", "webRequest"],
   "host_permissions": [
+    "*://*.ecrm.vn/*",
+    "*://*.nobi.pro/*",
     "*://*.seller-vn.tiktok.com/*",
     "*://*/*",
     "ws://*/*",
