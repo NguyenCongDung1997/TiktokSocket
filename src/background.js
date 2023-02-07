@@ -127,7 +127,7 @@ chrome.cookies.getAll(
                                     const username = checkUsername
                                         ?.filter((x) => x != ",uname," && x != "J," && x != "J0," && x !== undefined)
                                         .toString();
-                                    const regexPhone = new RegExp(`(?<!\\d[1-9]{1})((?:0|o)[\\.\\-\\s]?[1-9](?:[\\.\\-\\s]?[0-9o]){8,9}|(?:(?:\\+|00)\\d{1,4})[\\.\\-\\s]?[1-9](?:[\\.\\-\\s]?[0-9o]){6,9})(?!\\d)`, "gi");
+                                    const regexPhone = new RegExp(`(?<!\\d[1-9]{1})((?:0|o|84|63)[\\.\\-\\s]?[1-9](?:[\\.\\-\\s]?[0-9o]){8,9}|(?:(?:\\+|00)\\d{1,4})[\\.\\-\\s]?[1-9](?:[\\.\\-\\s]?[0-9o]){6,9})(?!\\d)`, "gi");
                                     var checkPhone = regexPhone.test(mess);
                                     const regexAddress = /(?:số|đường|quốc lộ|ngách|ngã|ngõ|hẻm|thôn|xóm|phường|xã|thị trấn|đội|ấp|khu|tòa nhà|tổ|chung cư|khách sạn|nhà|làng|thị xã|kiệt|số|đường|quốc lộ|địa chỉ|dc).+(?:Lào Cai|Điện Biên|Lai Châu|Sơn La|Yên Bái|Hoà Bình|Thái Nguyên|Lạng Sơn|Quảng Ninh|Bắc Giang|Phú Thọ|Vĩnh Phúc|Bắc Ninh|Hải Dương|Hải Phòng|Hưng Yên|Thái Bình|Hà Nam|Nam Định|Ninh Bình|Thanh Hóa|Nghệ An|Hà Tĩnh|Quảng Bình|Quảng Trị|Thừa Thiên Huế|Đà Nẵng|Quảng Nam|Quảng Ngãi|Bình Định|Phú Yên|Khánh Hòa|Ninh Thuận|Bình Thuận|Kon Tum|Gia Lai|Đắk Lắk|Đắk Nông|Lâm Đồng|Bình Phước|Tây Ninh|Bình Dương|Đồng Nai|Bà Rịa - Vũng Tàu|Bà Rịa-Vũng Tàu|HCM|Hồ Chí Minh|Long An|Tiền Giang|Bến Tre|Trà Vinh|Vĩnh Long|Đồng Tháp|An Giang|Kiên Giang|Cần Thơ|Hậu Giang|Sóc Trăng|Bạc Liêu|Cà Mau|Cao Bằng|Hà Giang|Hà Nội|Tuyên Quang|Bắc Kạn)/gi;
                                     var checkAddress = regexAddress.test(mess);
@@ -178,8 +178,8 @@ chrome.cookies.getAll(
                                                 domainNobi.forEach((dm) => {
                                                     fetch(`https://${dm}/api/tiktok/extension`, requestUpdateCus)
                                                     .then((resNobi) => resNobi.json())
-                                                    .then(resNobi => console.log(resNobi))
-                                                    .catch(error => console.log('error', error));
+                                                    .then(resNobi => console.log(dm, resNobi))
+                                                    .catch(error => console.log('error',dm, error));
                                                 })
                                                 // fetch(`https://basev2-ftr-extension-tiktok.ecrm.vn/api/tiktok/extension`, requestUpdateCus)
                                                 //     .then((resNobi) => resNobi.json())
