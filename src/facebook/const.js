@@ -1,0 +1,4 @@
+export const errors = {
+    PLEASE_CLOSE_BROWSER: 1357004,
+    MISSING_PERMISSION: 1373034,
+}

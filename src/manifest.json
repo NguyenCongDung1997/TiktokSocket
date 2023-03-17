@@ -1,0 +1,44 @@
+{
+  "description": "Nobi Pro - Expand the ability to connect and interact with fb fanpage",
+  "version": "2.2.75",
+  "name": "Nobi Pro",
+  "background": { "persistent": true, "scripts": ["background.bundle.js"] },
+  "content_scripts": [
+    {
+      "all_frames": false,
+      "js": ["contentscript.bundle.js"],
+      "matches": [
+        "https://localhost:5001/*",
+        "https://localhost:5002/*",
+        "https://*.ecrm.vn/*",
+        "https://*.nobi.pro/*",
+        "https://*.nobi.ph/*"
+      ],
+      "run_at": "document_end"
+    }
+  ],
+  "permissions": [
+    "tabs",
+    "webRequest",
+    "webRequestBlocking",
+    "*://*.facebook.com/",
+    "*://*.ecrm.vn/",
+    "https://*.nobi.pro/*",
+    "https://*.nobi.ph/*",
+    "*://*.seller-vn.tiktok.com/*",
+    "*://*.imapi-va-oth.isnssdk.com/*"
+  ],
+  "externally_connectable" : {
+    "matches": ["*://*.ecrm.vn/",
+    "https://*.nobi.pro/*",
+    "https://*.nobi.ph/*",
+    "https://localhost:5001/*"
+   ]
+  },
+  "icons": {
+    "128": "icon-128.png"
+  },
+  "manifest_version": 2,
+  "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'",
+  "web_accessible_resources": ["nobita.html"]
+}
