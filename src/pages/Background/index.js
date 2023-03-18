@@ -12,7 +12,7 @@ class Ecrm {
     // if (!localStorage.getItem("browserId")) localStorage.setItem("browserId", uuidv4());
   }
 
-   initWorker() {
+  initWorker() {
     chrome.runtime.onMessage.addListener(
       async (response, sender, sendResponse) => {
         console.log(response)
@@ -119,6 +119,7 @@ function overightHeaders() {
                 header.value = "https://upload-business.facebook.com";
                 break;
               case "imapi-va-oth.isnssdk.com":
+              case "seller-vn.tiktok.com":
                 header.value = "https://seller-vn.tiktok.com";
                 break;
               default:

@@ -3,9 +3,10 @@ class Decode {
         this.res = {},
         this.messagesPerUserInitV2ResponseBody = {},
         this.bodyResponse = {},
-        this.conversationInfoV2 = {}
+        this.conversationInfoV2 = {},
+        this.conversation = []
     }
-    Response(e, t) {
+    async Response(e, t) {
         for (var n, r, o = t === undefined ? e.len : e.pos + t, a = this.res; e.pos < o;) {
             var u = e.uint32();
             switch (u >>> 3) {
@@ -25,7 +26,7 @@ class Decode {
                     a.inbox_type = e.int32();
                     break;
                 case 6:
-                    a.body = this.BodyResponse(e, e.uint32());
+                    a.body = await this.BodyResponse(e, e.uint32());
                     break;
                 case 7:
                     a.log_id = e.string();
@@ -64,7 +65,7 @@ class Decode {
         }
         return a
     }
-    BodyResponse(e, t) {
+    async BodyResponse(e, t) {
         for (var n = t === undefined ? e.len : e.pos + t, r = this.bodyResponse; e.pos < n;) {
             var o = e.uint32();
             switch (o >>> 3) {
@@ -75,7 +76,7 @@ class Decode {
                     r.messages_per_user_body = c.im_proto.MessagesPerUserResponseBody.decode(e, e.uint32());
                     break;
                 case 203:
-                    r.messages_per_user_init_v2_body = this.MessagesPerUserInitV2ResponseBody(e, e.uint32());
+                    r.messages_per_user_init_v2_body = await this.MessagesPerUserInitV2ResponseBody(e, e.uint32());
                     break;
                 default:
                     e.skipType(7 & o)
@@ -83,9 +84,10 @@ class Decode {
         }
         return r
     }
+    
 
-    MessagesPerUserInitV2ResponseBody(e, t) {
-        for (var n = t === undefined ? e.len : e.pos + t, r = this.messagesPerUserInitV2ResponseBody; e.pos < n;) {
+    async MessagesPerUserInitV2ResponseBody(e, t) {
+        for (var n = t === undefined ? e.len : e.pos + t, r = {}; e.pos < n;) {
             var o = e.uint32();
             switch (o >>> 3) {
                 // case 1:
@@ -94,8 +96,8 @@ class Decode {
                 //     break;
                 case 2:
                     r.conversations && r.conversations.length || (r.conversations = []),
-                        r.conversations.push(this.ConversationInfoV2(e, e.uint32()));
-                    break;
+                    r.conversations.push(await this.ConversationInfoV2(e, e.uint32()));
+                        break;
                 case 3:
                     r.per_user_cursor = e.int64();
                     break;
@@ -111,7 +113,7 @@ class Decode {
         }
         return r
     }
-    ConversationInfoV2(e, t) {
+    async ConversationInfoV2(e, t) {
         for (var n = t === undefined ? e.len : e.pos + t, r = this.conversationInfoV2; e.pos < n;) {
             var o = e.uint32();
             switch (o >>> 3) {
@@ -119,10 +121,10 @@ class Decode {
                     r.conversation_id = e.string();
                     break;
                 case 2:
-                    r.conversation_short_id ={
-                        "low": 0,
-                        "high": 0,
-                        "unsigned": false
+                    r.conversation_short_id = {
+                        low: 0,
+                        high: 0,
+                        unsigned: false
                     };
                     r.conversation_short_id = e.int64();
                     break;
@@ -157,7 +159,16 @@ class Decode {
                     e.skipType(7 & o)
             }
         }
+        let conversationStorage = await localStorage.getItem("tiktok");
+        let conversations = {};
+        if (conversationStorage) {
+            conversations = JSON.parse(conversationStorage);
+        }
+        conversations[r.conversation_id] = r;
+        localStorage.setItem("tiktok", JSON.stringify(conversations));
+        console.log(r);
         return r
     }
+    
 }
 export default (new Decode())
