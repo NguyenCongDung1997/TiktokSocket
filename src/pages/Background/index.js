@@ -2,6 +2,7 @@ import FacebookSdk from "../../facebook";
 import workerMessage from "../../core/message";
 import NobiMess from '../../facebook/mess';
 import Tiktok from '../../tiktok';
+// import '../../tiktok/webmssdk';
 
 let nobiMess = new NobiMess(FacebookSdk);
 
@@ -12,7 +13,7 @@ class Ecrm {
     // if (!localStorage.getItem("browserId")) localStorage.setItem("browserId", uuidv4());
   }
 
-  initWorker() {
+   initWorker() {
     chrome.runtime.onMessage.addListener(
       async (response, sender, sendResponse) => {
         console.log(response)

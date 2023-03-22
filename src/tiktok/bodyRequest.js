@@ -1,5 +1,8 @@
 import { uuidv4 } from '../libs/utils';
 import { typeSend } from './config';
+import {long} from "./config";
+import './webmssdk';
+
 let uuid = uuidv4();
 
 const r = {
@@ -25,20 +28,22 @@ class bodyRequest {
         this.shopIdSocket = dataShop?.shopIdSocket;
         this.tokenSocket = dataShop?.tokenSocket;
         this.pigeonShopId = dataShop?.pigeonShopId;
+        this.shopIdApp = dataShop?.shopIdApp;
         this.conversation = dataShop?.conversation;
     }
-    send_message_body() {
+    send_message_body(content) {
+        
         const obj = {
             "send_message_body": {
                 "conversation_id": this.conversation?.conversation_id,
-                // "conversation_short_id": 7084140972615024901,
-                "conversation_short_id": {
-                    "low": 1669480709,
-                    "high": 1649405102,
-                    "unsigned": false
-                },
+                "conversation_short_id": long(this.conversation?.conversation_id),
+                // "conversation_short_id": {
+                //     "low": 1669480709,
+                //     "high": 1649405102,
+                //     "unsigned": false
+                // },
                 "conversation_type": 2,
-                "content": "te",
+                "content": content,
                 "mentioned_users": [],
                 "client_message_id": uuid,
                 "ticket": this.conversation?.ticket,
@@ -48,7 +53,7 @@ class bodyRequest {
                     "monitor_send_message_platform": "pc",
                     "monitor_send_message_start_time": Math.floor(new Date().getTime()),
                     "type": "text",
-                    "original_content": "te",
+                    "original_content": content,
                     "detect_lang": "",
                     "sender_role": "2",
                     "a:user_language": "vi",
@@ -65,12 +70,12 @@ class bodyRequest {
         }
         return obj;
     }
-    rawBody(type) {
+    rawBody(type, content) {
         let body;
         let cmd;
         switch (type) {
             case typeSend.SEND_MESSAGE:
-                body = this.send_message_body();
+                body = this.send_message_body(content);
                 cmd = 100;
                 break;
             case typeSend.GET_MESSAGES_BY_USER_INIT_V2:
@@ -99,26 +104,22 @@ class bodyRequest {
         console.log(obj);
         return obj;
     }
-    bodyPayload(payload) {
+    bodyPayload(payload, XBogus) {
         const obj = {
             "headers": [
                 {
                     "key": "X-Bogus",
-                    "value": "WMxEGTzn1BcRckHv"
+                    "value": XBogus
                 }
             ],
             "service": 10002,
             "method": 1,
             "seqid": {
-                "low": 10075,
+                "low": 10001,
                 "high": 0,
                 "unsigned": false
             },
-            "logid": {
-                "low": -998704318,
-                "high": 390,
-                "unsigned": false
-            },
+            "logid": Math.floor(new Date().getTime()),
             "payload_type": "pb",
             "payload": payload
         }

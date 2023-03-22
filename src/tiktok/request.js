@@ -8,7 +8,9 @@ class RequestTiktok {
 
     async ResConversation(array) {
         const r = new protobuf.Reader(new Uint8Array(array));
-        Decode.Response(r);
+        const res = await Decode.Response(r)
+        console.log(res);
+        return res;
     }
 
     async GetToken(shopIdApp) {
@@ -77,36 +79,39 @@ class RequestTiktok {
         });
 
         const dataJson = await FetchTiktok.PostJson(
-                `https://seller-vn.tiktok.com/chat/api/seller/createGroupChat?PIGEON_BIZ_TYPE=1&PIGEON_BIZ_TYPE=1&oec_region=VN&aid=4068&oec_seller_id=${shopIdApp}`
-                , body);
+            `https://seller-vn.tiktok.com/chat/api/seller/createGroupChat?PIGEON_BIZ_TYPE=1&PIGEON_BIZ_TYPE=1&oec_region=VN&aid=4068&oec_seller_id=${shopIdApp}`
+            , body);
         return dataJson.data;
+    }
+    async Sendmess(payload) {
+        const buffer = payload.buffer
+        const data = await FetchTiktok.PostArrayBuffer(
+            `https://imapi-va-oth.isnssdk.com/v1/message/send`
+            , buffer);
+        return await this.ResConversation(data)
     }
     async GetByUserInit(payload) {
         const buffer = payload.buffer
-        // const res =  await fetch("https://imapi-va-oth.isnssdk.com/v2/message/get_by_user_init", {
-        //     "headers": {
-        //         "accept": "application/x-protobuf",
-        //         "accept-language": "vi,en;q=0.9,fr-FR;q=0.8,fr;q=0.7,vi-VN;q=0.6,en-US;q=0.5",
-        //         "content-type": "application/x-protobuf",
-        //         "sec-ch-ua": "\"Google Chrome\";v=\"111\", \"Not(A:Brand\";v=\"8\", \"Chromium\";v=\"111\"",
-        //         "sec-ch-ua-mobile": "?0",
-        //         "sec-ch-ua-platform": "\"Windows\"",
-        //         "sec-fetch-dest": "empty",
-        //         "sec-fetch-mode": "cors",
-        //         "sec-fetch-site": "cross-site"
-        //     },
-        //     "referrer": "https://seller-vn.tiktok.com/",
-        //     "referrerPolicy": "strict-origin-when-cross-origin",
-        //     "body": buffer,
-        //     "method": "POST",
-        //     "mode": "cors",
-        //     "credentials": "omit"
-        // })
-            // const data = await res.arrayBuffer()
-            const data = await FetchTiktok.PostArrayBuffer(
-                `https://imapi-va-oth.isnssdk.com/v2/message/get_by_user_init`
-                , buffer);
-            await this.ResConversation(data)
+        const data = await FetchTiktok.PostArrayBuffer(
+            `https://imapi-va-oth.isnssdk.com/v2/message/get_by_user_init`
+            , buffer);
+        await this.ResConversation(data)
+    }
+    async GetRobotConfig(shopIdApp) {
+        var body = JSON.stringify({});
+        const data = await FetchTiktok.PostJson(
+            `https://seller-vn.tiktok.com/tts/v1/robot/config/init?PIGEON_BIZ_TYPE=1&oec_region=VN&aid=4068&oec_seller_id=${shopIdApp}`
+            , body);
+        return data.data.robotId
+    }
+    async GetGreetingList(shopIdApp, robotId) {
+        var body = JSON.stringify({
+            "robotId": robotId
+        });
+        const data = await FetchTiktok.PostJson(
+            `https://seller-vn.tiktok.com/tts/v1/robot/greeting/list?PIGEON_BIZ_TYPE=1&oec_region=VN&aid=4068&oec_seller_id=${shopIdApp}`
+            , body);
+        return data.data
     }
 
     async ResMessageSocket(socket, shopIdApp) {
@@ -124,6 +129,7 @@ class RequestTiktok {
             var reader = new FileReader();
             // reader.readAsDataURL(event.data);
             reader.onload = function () {
+                console.log(reader.result);
                 const str = reader.result
                     .match(
                         /[a-zA-Z0-9_. ,ÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚĂĐĨŨƠàáâãèéêìíòóôõùúăđĩũơƯĂẠẢẤẦẨẪẬẮẰẲẴẶẸẺẼỀỀỂưăạảấầẩẫậắằẳẵặẹẻẽềềểỄỆỈỊỌỎỐỒỔỖỘỚỜỞỠỢỤỦỨỪễệỉịọỏốồổỗộớờởỡợụủứừỬỮỰỲỴÝỶỸửữựỳỵỷỹ]+/g
@@ -195,23 +201,15 @@ class RequestTiktok {
             }
             else if (event.currentTarget.binaryType == "arraybuffer") {
                 //test tin nhắn đã gửi thành công
-
-                // let arr = new TextDecoder().decode(new Uint8Array(event.data))
-                // arr = arr.replace(/\\n/g, "\\n")
-                //     .replace(/\\'/g, "\\'")
-                //     .replace(/\\"/g, '\\"')
-                //     .replace(/\\&/g, "\\&")
-                //     .replace(/\\r/g, "\\r")
-                //     .replace(/\\t/g, "\\t")
-                //     .replace(/\\b/g, "\\b")
-                //     .replace(/\\f/g, "\\f");
-                // // Remove non-printable and other non-valid JSON characters
-                // arr = arr.replace(/[\u0000-\u0019]+/g, "");
                 let dataSocket = new Blob([new Uint8Array(event.data)]);
-                // console.log(tesst, arr, event.data);
+                const decoder = new TextDecoder();
+                const jsonString = decoder.decode(new Uint8Array(event.data));
+                const jsonObject = JSON.parse(JSON.stringify(jsonString));
+                console.log(jsonObject);
+                const r = new protobuf.Reader(new Uint8Array(event.data));
+                const res = Decode.Response(r)
+                console.log(res);
 
-                // let obj = JSON.parse(JSON.stringify(arr));
-                // console.log(obj);
                 reader.readAsText(dataSocket);
             }
         };

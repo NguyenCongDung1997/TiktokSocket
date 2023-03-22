@@ -19,12 +19,13 @@ class Tiktok {
         );
 
         RequestTiktok.ResMessageSocket(socket, shopIdApp);
-        const tokenFormChat = await RequestTiktok.SearchOrder("577057454958151935", shopIdApp);
+        const tokenFormChat = await RequestTiktok.SearchOrder("577088024687839659", shopIdApp);
         const pigeonUid = await RequestTiktok.GetPigeonId(tokenFormChat, shopIdApp);
-        const conversation = RequestTiktok.CreateGroupChat(pigeonUid, shopIdApp);
-        const sendTiktok = new SendTiktok({ shopIdSocket, tokenSocket, pigeonShopId });
+        const conversation = await RequestTiktok.CreateGroupChat(pigeonUid, shopIdApp);
+        console.log(conversation);
+        const sendTiktok = new SendTiktok({ shopIdSocket, tokenSocket, pigeonShopId,shopIdApp, conversation });
         await sendTiktok.getConversation();
-        await sendTiktok.run(socket);
+        await sendTiktok.run(socket, conversation);
 
     }
 

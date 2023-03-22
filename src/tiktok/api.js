@@ -1,5 +1,4 @@
 import { headers } from './config';
-const protobuf = require("protobufjs");
 
 class FetchTiktok {
     async Get(url) {

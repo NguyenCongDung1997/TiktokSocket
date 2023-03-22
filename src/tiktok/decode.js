@@ -1,10 +1,10 @@
 class Decode {
     constructor() {
         this.res = {},
-        this.messagesPerUserInitV2ResponseBody = {},
-        this.bodyResponse = {},
-        this.conversationInfoV2 = {},
-        this.conversation = []
+            this.messagesPerUserInitV2ResponseBody = {},
+            this.bodyResponse = {},
+            this.conversationInfoV2 = {},
+            this.conversation = []
     }
     async Response(e, t) {
         for (var n, r, o = t === undefined ? e.len : e.pos + t, a = this.res; e.pos < o;) {
@@ -70,7 +70,7 @@ class Decode {
             var o = e.uint32();
             switch (o >>> 3) {
                 case 100:
-                    r.send_message_body = c.im_proto.SendMessageResponseBody.decode(e, e.uint32());
+                    r.send_message_body = await this.SendMessageResponseBody(e, e.uint32());
                     break;
                 case 200:
                     r.messages_per_user_body = c.im_proto.MessagesPerUserResponseBody.decode(e, e.uint32());
@@ -84,7 +84,41 @@ class Decode {
         }
         return r
     }
-    
+
+    async SendMessageResponseBody(e, t) {
+        for (
+            var n = t === undefined ? e.len : e.pos + t,
+            r = {};
+            e.pos < n;
+
+        ) {
+            var o = e.uint32();
+            switch (o >>> 3) {
+                case 1:
+                    r.server_message_id = e.int64();
+                    break;
+                case 2:
+                    r.extra_info = e.string();
+                    break;
+                case 3:
+                    r.status = e.int32();
+                    break;
+                case 4:
+                    r.client_message_id = e.string();
+                    break;
+                case 5:
+                    r.check_code = e.int64();
+                    break;
+                case 6:
+                    r.check_message = e.string();
+                    break;
+                default:
+                    e.skipType(7 & o);
+            }
+        }
+        return r;
+    }
+
 
     async MessagesPerUserInitV2ResponseBody(e, t) {
         for (var n = t === undefined ? e.len : e.pos + t, r = {}; e.pos < n;) {
@@ -96,8 +130,8 @@ class Decode {
                 //     break;
                 case 2:
                     r.conversations && r.conversations.length || (r.conversations = []),
-                    r.conversations.push(await this.ConversationInfoV2(e, e.uint32()));
-                        break;
+                        r.conversations.push(await this.ConversationInfoV2(e, e.uint32()));
+                    break;
                 case 3:
                     r.per_user_cursor = e.int64();
                     break;
@@ -121,11 +155,6 @@ class Decode {
                     r.conversation_id = e.string();
                     break;
                 case 2:
-                    r.conversation_short_id = {
-                        low: 0,
-                        high: 0,
-                        unsigned: false
-                    };
                     r.conversation_short_id = e.int64();
                     break;
                 case 3:
@@ -169,6 +198,6 @@ class Decode {
         console.log(r);
         return r
     }
-    
+
 }
 export default (new Decode())
