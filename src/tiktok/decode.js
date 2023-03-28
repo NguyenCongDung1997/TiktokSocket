@@ -188,13 +188,13 @@ class Decode {
                     e.skipType(7 & o)
             }
         }
-        let conversationStorage = await localStorage.getItem("tiktok");
+        let conversationStorage = await localStorage.getItem("conversatisonTiktok");
         let conversations = {};
         if (conversationStorage) {
             conversations = JSON.parse(conversationStorage);
         }
         conversations[r.conversation_id] = r;
-        localStorage.setItem("tiktok", JSON.stringify(conversations));
+        localStorage.setItem("conversatisonTiktok", JSON.stringify(conversations));
         console.log(r);
         return r
     }

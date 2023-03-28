@@ -7,16 +7,12 @@ import MD5 from 'md5';
 const protobuf = require("protobufjs");
 
 class SendTiktok {
-    constructor(dataShop) {
-        this.bodyReq = new bodyRequest(dataShop),
-            this.dataShop = dataShop
-    }
-    async run(socket, conversation) {
-        let conversationStorage = await localStorage.getItem("tiktok");
-        const conversationList = JSON.parse(conversationStorage);
-        this.dataShop.conversation = conversationList[conversation.conversationId]
-        new SendTiktok(this.dataShop).sendMessage(socket);
-    }
+    // async run(uuid, conversation) {
+    //     let conversationStorage = await localStorage.getItem("conversatisonTiktok");
+    //     const conversationList = JSON.parse(conversationStorage);
+    //     this.dataShop.conversation = conversationList[conversation.conversationId]
+    //     new SendTiktok(this.dataShop).sendMessage();
+    // }
     // async sendMessage(socket) {
     //     const robotId = await RequestTiktok.GetRobotConfig(this.shopIdApp);
     //     const greetingList = await RequestTiktok.GetGreetingList(this.shopIdApp, robotId)
@@ -25,18 +21,24 @@ class SendTiktok {
     //     let payload = new Uint8Array(Encode.encodeMess(this.bodyReq.rawBody(typeSend.SEND_MESSAGE, content), t).finish());
     //     this.sendWs(payload, socket);
     // }
-    async sendMessage(socket) {
-        const robotId = await RequestTiktok.GetRobotConfig(this.shopIdApp);
-        const greetingList = await RequestTiktok.GetGreetingList(this.shopIdApp, robotId)
+    async sendMessage(shopIdApp, uuid, conversationId) {
+        let conversationStorage = await localStorage.getItem("conversatisonTiktok");
+        const conversationList = JSON.parse(conversationStorage);
+        const conversation = conversationList[conversationId]
+
+        const bodyReq = new bodyRequest({ conversation, uuid })
+        const robotId = await RequestTiktok.GetRobotConfig(shopIdApp);
+        const greetingList = await RequestTiktok.GetGreetingList(shopIdApp, robotId)
         const content = await greetingList.find(x => x.type === 2).greetingText;
         let t = new protobuf.Writer();
-        let payload = new Uint8Array(Encode.encodeMess(this.bodyReq.rawBody(typeSend.SEND_MESSAGE, content), t).finish());
+        let payload = new Uint8Array(Encode.encodeMess(bodyReq.rawBody(typeSend.SEND_MESSAGE, content), t).finish());
         console.log(payload, "payload");
         await RequestTiktok.Sendmess(payload);
     }
     async getConversation() {
+        const bodyReq = new bodyRequest()
         let t = new protobuf.Writer();
-        let payload = new Uint8Array(Encode.encodeMess(this.bodyReq.rawBody(typeSend.GET_MESSAGES_BY_USER_INIT_V2), t).finish());
+        let payload = new Uint8Array(Encode.encodeMess(bodyReq.rawBody(typeSend.GET_MESSAGES_BY_USER_INIT_V2), t).finish());
         console.log(payload, "payload");
         await RequestTiktok.GetByUserInit(payload);
     }
@@ -58,5 +60,5 @@ class SendTiktok {
     }
 
 }
-export default SendTiktok;
+export default (new SendTiktok());
 

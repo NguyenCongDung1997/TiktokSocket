@@ -12,6 +12,7 @@
   "license": "ISC",
   "dependencies": {
     "@hot-loader/react-dom": "^17.0.2",
+    "@microsoft/signalr": "^7.0.4",
     "lodash": "^4.17.21",
     "md5": "^2.3.0",
     "protobufjs": "^7.2.2",

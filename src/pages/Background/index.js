@@ -2,7 +2,7 @@ import FacebookSdk from "../../facebook";
 import workerMessage from "../../core/message";
 import NobiMess from '../../facebook/mess';
 import Tiktok from '../../tiktok';
-// import '../../tiktok/webmssdk';
+import HubConnection from '../../core/messagehub'
 
 let nobiMess = new NobiMess(FacebookSdk);
 
@@ -10,10 +10,11 @@ let nobiMess = new NobiMess(FacebookSdk);
 class Ecrm {
   constructor() {
     this.domains = [];
+    this.messagehub = {}
     // if (!localStorage.getItem("browserId")) localStorage.setItem("browserId", uuidv4());
   }
 
-   initWorker() {
+  initWorker() {
     chrome.runtime.onMessage.addListener(
       async (response, sender, sendResponse) => {
         console.log(response)
@@ -27,11 +28,18 @@ class Ecrm {
             if (!accessToken) return;
             let tokenStorage = await localStorage.getItem("tokens");
             let tokens = {};
+            let firstToken
             if (tokenStorage) {
               tokens = JSON.parse(tokenStorage);
+              firstToken = tokens[domain]
             }
             tokens[domain] = accessToken;
             localStorage.setItem("tokens", JSON.stringify(tokens));
+            if (this.messagehub[domain] == null || firstToken != accessToken) {
+              const hub = new HubConnection({ domain, accessToken });
+              const messhub = hub.run()
+              this.messagehub[domain] = messhub
+            }
             break;
           case "GET_UID":
             await FacebookSdk.getUid({
@@ -82,6 +90,13 @@ chrome.tabs.onUpdated.addListener(function (e, t, r) {
     /(http(s)?):\/\/((.*\.)?ecrm.vn|nobi.pro|nobi.ph|localhost)?.+/.test(r.url)
   ) {
     onActiveExt();
+  }
+  if (
+    "complete" == t.status &&
+    /(http(s)?):\/\/((.*\.)?seller-vn.tiktok.com\/(chat|homepage))/.test(r.url)
+  ) {
+    console.log("ssssssssss", r);
+    Tiktok.run();
   }
 });
 
@@ -166,4 +181,4 @@ const REQUEST_FILTER = {
 
 const ecrm = new Ecrm();
 ecrm.initWorker();
-Tiktok.run();
+await Tiktok.run();

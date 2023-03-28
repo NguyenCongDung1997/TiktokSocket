@@ -3,8 +3,6 @@ import { typeSend } from './config';
 import {long} from "./config";
 import './webmssdk';
 
-let uuid = uuidv4();
-
 const r = {
     version: "0.3.8",
     branch: "master",
@@ -23,13 +21,19 @@ const messages_per_user_init_v2_body = {
 }
 
 class bodyRequest {
-    constructor(dataShop) {
-        console.log(dataShop);
-        this.shopIdSocket = dataShop?.shopIdSocket;
-        this.tokenSocket = dataShop?.tokenSocket;
-        this.pigeonShopId = dataShop?.pigeonShopId;
-        this.shopIdApp = dataShop?.shopIdApp;
-        this.conversation = dataShop?.conversation;
+    constructor(data) {
+        this.conversation = data?.conversation;
+        this.uuid = data?.uuid;
+        this.init();
+    }
+    init() {
+        const str = localStorage.getItem("tiktok");
+        if (str) {
+            const json = JSON.parse(str);
+            Object.entries(json).map(([key, value]) => {
+                this[key] = value;
+            });
+        };
     }
     send_message_body(content) {
         
@@ -37,15 +41,10 @@ class bodyRequest {
             "send_message_body": {
                 "conversation_id": this.conversation?.conversation_id,
                 "conversation_short_id": long(this.conversation?.conversation_id),
-                // "conversation_short_id": {
-                //     "low": 1669480709,
-                //     "high": 1649405102,
-                //     "unsigned": false
-                // },
                 "conversation_type": 2,
                 "content": content,
                 "mentioned_users": [],
-                "client_message_id": uuid,
+                "client_message_id": this.uuid,
                 "ticket": this.conversation?.ticket,
                 "message_type": 1000,
                 "ext": {
@@ -64,7 +63,7 @@ class bodyRequest {
                     "is_cross_board": "0",
                     "cross_board_region": "",
                     "s:mentioned_users": "",
-                    "s:client_message_id": uuid
+                    "s:client_message_id": this.uuid
                 }
             }
         }
